@@ -116,16 +116,17 @@ class socketWebSocket extends socket
 	{
 		$this->console('Requesting handshake...');
 
-		list($resource,$host,$origin) = $this->getheaders($buffer);
+		list($resource,$host,$origin,$key) = $this->getheaders($buffer);
 
 		$this->console('Handshaking...');
 
-		$upgrade  = "HTTP/1.1 101 Web Socket Protocol Handshake\r\n" .
-				"Upgrade: WebSocket\r\n" .
+		$upgrade  = "HTTP/1.1 101 Switching Protocols\r\n" .
+				"Upgrade: websocket\r\n" .
 				"Connection: Upgrade\r\n" .
+				"Sec-WebSocket-Accept: {$key}\r\n".
 				"WebSocket-Origin: {$origin}\r\n" .
-				"WebSocket-Location: ws://{$host}{$resource}\r\n\r\n" . chr(0);
-
+				"WebSocket-Location: ws://{$host}{$resource}\r\n" . chr(0);	
+		echo $upgrade;		
 		$this->handshakes[$socket_index] = true;
 
 		socket_write($socket,$upgrade,strlen($upgrade));
@@ -173,14 +174,24 @@ class socketWebSocket extends socket
 	 */
 	private function getheaders($req)
 	{
+		
 		$req  = substr($req,4); /* RegEx kill babies */
 		$res  = substr($req,0,strpos($req," HTTP"));
+		$key  = substr($req,(strpos($req,"Sec-WebSocket-Key:")+19),24);		
+		$key  = $this->hashKey($key); 		
 		$req  = substr($req,strpos($req,"Host:")+6);
 		$host = substr($req,0,strpos($req,"\r\n"));
 		$req  = substr($req,strpos($req,"Origin:")+8);
-		$ori  = substr($req,0,strpos($req,"\r\n"));
+		$ori  = substr($req,0,strpos($req,"\r\n"));	
+		return array($res,$host,$ori,$key);
+	}
 
-		return array($res,$host,$ori);
+	protected function hashKey($key)
+	{
+		$catString = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+		$buffer = $key.$catString;
+		$buffer = hash('sha1',$buffer,true);
+		return base64_encode($buffer);
 	}
 
 	/**

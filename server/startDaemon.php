@@ -17,6 +17,7 @@ require 'socket.class.php';
 require 'socketWebSocket.class.php';
 require 'socketWebSocketTrigger.class.php';
 
-$WebSocket = new socketWebSocket('148.226.26.47',8000);
+$ip = exec ("ifconfig|grep 'inet:'|grep -v '127.0.0.1' |cut -d: -f2 |awk '{ print $1}'");
+$WebSocket = new socketWebSocket($ip,8000);
 
 ?>

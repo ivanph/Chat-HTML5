@@ -4,23 +4,25 @@
 <script src="jquery-1.6.4.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-	if (window.MozWebSocket){
-		window.WebSocket = window.MozWebSocket;	
-	
+	if ("MozWebSocket" in window)
+	{
+		window.WebSocket = window.MozWebSocket;
 	}
-	
+
 	if(!("WebSocket" in window)){
+		
 		
 		$('#chatLog, input, button, #examples').fadeOut("fast");	
 		$('<p>Oh no, you need a browser that supports WebSockets. How about <a href="http://www.google.com/chrome">Google Chrome</a>?</p>').appendTo('#container');		
 	}else{
 		//The user has WebSockets
+		
 	
-	connect();
 		
 	function connect(){
 			var socket;
-			var host = "ws://148.226.26.47:8000/server/startDaemon.php";
+			var server = location.host;
+			var host = "ws://"+server+":8000/server/startDaemon.php";
 			
 			try{
 				var socket = new WebSocket(host);
@@ -72,7 +74,7 @@ $(document).ready(function() {
 			});
 
 		}
-		
+		connect();
 		
 	}//End connect()
 		
