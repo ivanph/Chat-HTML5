@@ -13,7 +13,7 @@ $(document).ready(function() {
 		
 		
 		$('#chatLog, input, button, #examples').fadeOut("fast");	
-		$('<p>Oh no, you need a browser that supports WebSockets. How about <a href="http://www.google.com/chrome">Google Chrome</a>?</p>').appendTo('#container');		
+		$('<p>Your Browser Does'nt supports wesockets How about <a href="http://www.google.com/chrome">Google Chrome</a>?</p>').appendTo('#container');		
 	}else{
 		//The user has WebSockets
 		alert("Websocket");
